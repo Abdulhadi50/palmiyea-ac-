@@ -1,0 +1,417 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Para yatırma</title>
+    <style>
+        :root {
+            --primary: #4361ee; /* لون رئيسي أكثر احترافية */
+            --secondary: #3f37c9; /* تدرج أغمق */
+            --accent: #4cc9f0; /* لون مميز */
+            --background: #fff; /* خلفية فاتحة مع لون ازرق خفيف */
+            --text: #2b2d42; /* نص أغمق لقابلية قراءة أفضل */
+            --success: #4CAF50; /* لون النجاح */
+            --error: #f44336; /* لون الخطأ */
+            --border: #e0e0e0;
+            --shadow: 0 8px 24px rgba(0, 0, 0, 0.08);
+            --gradient: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%);
+        }
+
+        * {
+            box-sizing: border-box;
+            font-family: 'Tajawal', sans-serif;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            background: var(--background);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 10px;
+        }
+
+        .container {
+            padding: 1.5rem;
+            max-width: 520px;
+            width: 100%;
+            transform: translateY(0);
+            animation: containerEntrance 0.6s cubic-bezier(0.23, 1, 0.32, 1);
+        }
+
+        @keyframes containerEntrance {
+            0% { transform: translateY(20px); opacity: 0; }
+            100% { transform: translateY(0); opacity: 1; }
+        }
+
+        h1 {
+            color: var(--text);
+            text-align: center;
+            margin-bottom: 2rem;
+            font-size: 1.8rem;
+            font-weight: 700;
+            position: relative;
+            padding-bottom: 1rem;
+        }
+
+        h1::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 60px;
+            height: 3px;
+            background: var(--gradient);
+            border-radius: 2px;
+        }
+
+        .input-group, .copy-container, .upload-section {
+            margin-bottom: 1.8rem;
+            position: relative;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 0.8rem;
+            font-weight: 500;
+            color: var(--text);
+            font-size: 0.95rem;
+        }
+
+        input[type="number"] {
+            width: 100%;
+            padding: 1rem;
+            border: 2px solid var(--border);
+            border-radius: 12px;
+            font-size: 1rem;
+            transition: all 0.3s ease;
+            background: #fff;
+            appearance: none;
+        }
+
+        input[type="number"]:focus {
+            outline: none;
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px rgba(67, 97, 238, 0.1);
+        }
+
+        /* تحسينات مربع المعلومات */
+        .info-box {
+            background: #f8f9ff;
+            padding: 1.2rem;
+            border-radius: 14px;
+            border: 1px solid rgba(67, 97, 238, 0.1);
+            margin: 1.5rem 0;
+        }
+
+        .copy-container {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background: white;
+            padding: 0.8rem 1.2rem;
+            border-radius: 8px;
+            margin: 0.8rem 0;
+            box-shadow: 0 2px 6px rgba(0, 0, 0, 0.05);
+            transition: transform 0.2s ease;
+        }
+
+        .copy-container:hover {
+            transform: translateX(-5px);
+        }
+
+        .copy-btn {
+            background: var(--gradient);
+            color: white;
+            border: none;
+            padding: 0.3rem 1.0rem;
+            border-radius: 15px;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            font-weight: 500;
+        }
+
+        .copy-btn:hover {
+            opacity: 0.9;
+            box-shadow: 0 4px 12px rgba(67, 97, 238, 0.2);
+        }
+
+        /* تحسينات قسم رفع الملفات */
+        .upload-section {
+            border: 2px dashed var(--border);
+            padding: 2rem 1rem;
+            border-radius: 14px;
+            text-align: center;
+            transition: all 0.3s ease;
+            background: #fff;
+        }
+
+        .upload-section:hover {
+            border-color: var(--primary);
+            background: rgba(67, 97, 238, 0.03);
+        }
+
+        .upload-section.dragover {
+            border-color: var(--primary);
+            background: rgba(67, 97, 238, 0.05);
+        }
+
+        input[type="file"] {
+            width: 100%;
+            opacity: 0;
+            position: absolute;
+            left: 0;
+            top: 0;
+            height: 100%;
+        }
+
+        /* زر الإرسال المحسّن */
+        #submitBtn {
+            width: 100%;
+            padding: 1.0rem;
+            background: var(--gradient);
+            color: white;
+            border: none;
+            border-radius: 15px;
+            font-size: 1.1rem;
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+            font-weight: 600;
+        }
+
+        #submitBtn:disabled {
+            opacity: 0.7;
+            cursor: not-allowed;
+            background: #e0e0e0;
+        }
+
+        #submitBtn:hover:not(:disabled) {
+            opacity: 0.95;
+            box-shadow: 0 6px 16px rgba(67, 97, 238, 0.2);
+        }
+
+        /* تحسينات النوافذ المنبثقة */
+        .popup {
+    display: none; /* إخفاء النافذة عند تحميل الصفحة */
+    position: fixed;
+    top: 25px;
+    right: 25px;
+    padding: 1rem 2rem;
+    border-radius: 10px;
+    color: white;
+    z-index: 1000;
+    box-shadow: var(--shadow);
+    animation: slideIn 0.4s cubic-bezier(0.18, 0.89, 0.32, 1.28);
+    backdrop-filter: blur(5px);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    align-items: center;
+    gap: 0.8rem;
+}
+
+        .popup::before {
+            content: '';
+            width: 20px;
+            height: 20px;
+            background-size: contain;
+        }
+
+        .popup-success {
+            background: rgba(76, 175, 80, 0.95);
+        }
+
+        .popup-error {
+            background: rgba(244, 67, 54, 0.95);
+        }
+
+        /* تحميل متحرك أكثر أناقة */
+        .loader {
+            width: 24px;
+            height: 24px;
+            border: 3px solid rgba(255, 255, 255, 0.2);
+            border-top-color: white;
+            border-radius: 50%;
+            animation: spin 0.8s linear infinite;
+            display: none;
+        }
+
+        /* مؤشرات التفاعل */
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        @keyframes slideIn {
+            from { transform: translateX(100%); }
+            to { transform: translateX(0); }
+        }
+
+        /* التأكيد على الحقول المطلوبة */
+        input:required + label::after {
+            content: '*';
+            color: var(--error);
+            margin-right: 4px;
+            font-size: 0.9em;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+  <h1>Para Yatırma</h1>
+  
+  <div class="input-group">
+    <label for="amount">Yatırılacak Tutar</label>
+    <input type="number" id="amount" placeholder="Lütfen tutarı girin en az 100 TL" min="100" required>
+  </div>
+  
+  <p style="text-align: center; font-size: 0.9rem; color: var(--text); margin-top: 1rem;">
+    ⏳ Paranız 5 iş saati içinde hesabınıza eklenecektir.
+  </p>
+  
+  <div class="info-box">
+    <div class="copy-container">
+      <span id="iban">TR84 0082 9000 0949 1636 0501 10</span>
+      <button class="copy-btn" onclick="copyText('iban')">IBAN Kopyala</button>
+    </div>
+    <div class="copy-container">
+      <span id="accountName">Abdulhadi Hacı Zübeyde</span>
+      <button class="copy-btn" onclick="copyText('accountName')">İsmi Kopyala</button>
+    </div>
+  </div>
+  
+  <p style="text-align: center; font-size: 0.9rem; color: var(--text); margin-top: 1rem;">
+    ⚠️ Lütfen önce ödemeyi yapın, ardından talebinizi gönderin.
+  </p>
+  
+  <div class="upload-section">
+    <label for="paymentProof">Banka Havale Dekontunu Yükleyin</label>
+    <input type="file" id="paymentProof" accept="image/*" required>
+  </div>
+  
+  <button id="submitBtn" onclick="submitRequest()">
+    <span id="btnText">Talebi Gönder</span>
+    <div class="loader" id="loader"></div>
+  </button>
+</div>
+
+<div class="popup" id="popup"></div>
+
+    <!-- Firebase Libraries -->
+    <script src="https://www.gstatic.com/firebasejs/8.3.3/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.3.3/firebase-firestore.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.3.3/firebase-storage.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.3.3/firebase-auth.js"></script>
+
+    <script>
+        const firebaseConfig = {
+  apiKey: "AIzaSyCAvlDoXDOqlXShRJHXXjBc1HQCptkROP0",
+  authDomain: "palmiye105.firebaseapp.com",
+  projectId: "palmiye105",
+  storageBucket: "palmiye105.firebasestorage.app",
+  messagingSenderId: "858789700392",
+  appId: "1:858789700392:web:bf69a5e34592c38cc8661d"
+};
+
+        if (!firebase.apps.length) {
+            firebase.initializeApp(firebaseConfig);
+        }
+
+        const db = firebase.firestore();
+        const storage = firebase.storage();
+        const auth = firebase.auth();
+
+        const amountInput = document.getElementById('amount');
+        const submitBtn = document.getElementById('submitBtn');
+        const loader = document.getElementById('loader');
+        const btnText = document.getElementById('btnText');
+        const popup = document.getElementById('popup');
+
+        function copyText(elementId) {
+            const text = document.getElementById(elementId).textContent;
+            navigator.clipboard.writeText(text).then(() => {
+                showPopup('Başarıyla kopyalandı', 'success');
+            });
+        }
+
+        function validateForm() {
+            const isValid = amountInput.value >= 100 &&
+                            document.getElementById('paymentProof').files.length > 0;
+
+            submitBtn.disabled = !isValid;
+            return isValid;
+        }
+
+        function showPopup(message, type) {
+            popup.className = `popup popup-${type}`;
+            popup.textContent = message;
+            popup.style.display = 'block';
+            
+            setTimeout(() => {
+                popup.style.display = 'none';
+            }, 3000);
+        }
+
+        async function submitRequest() {
+            if (!validateForm()) {
+                showPopup('Lütfen tüm alanları doğru şekilde doldurun', 'error');
+                return;
+            }
+
+            btnText.style.display = 'none';
+            loader.style.display = 'block';
+            submitBtn.disabled = true;
+
+            try {
+                const user = auth.currentUser;
+                const paymentProof = document.getElementById('paymentProof').files[0];
+
+                const userDoc = await db.collection('users').doc(user.uid).get();
+                if (!userDoc.exists) {
+                    throw new Error('Kullanıcı bulunamadı');
+                }
+
+                const userData = userDoc.data();
+const userName = userData.name || 'Bilinmeyen Kullanıcı';
+const uniqueId = userData.uniqueId || 'Bilinmiyor';
+
+                const storageRef = storage.ref(`proofs/${user.uid}/${paymentProof.name}`);
+                await storageRef.put(paymentProof);
+                const proofUrl = await storageRef.getDownloadURL();
+
+                await db.collection('paymentRequests').add({
+                    userId: user.uid,
+                    userName: userName,
+                    uniqueId: uniqueId,
+                    amount: parseFloat(amountInput.value),
+                    proofUrl: proofUrl,
+                    timestamp: firebase.firestore.FieldValue.serverTimestamp(),
+                    status: 'İnceleniyor'
+});
+
+                showPopup('Talebiniz başarıyla gönderildi, lütfen birkaç saat bekleyin', 'success');
+    resetForm();
+  } catch (error) {
+    console.error('Hata:', error);
+    showPopup('Gönderim sırasında hata oluştu: ' + error.message, 'error');
+  } finally {
+    btnText.style.display = 'block';
+    loader.style.display = 'none';
+    submitBtn.disabled = false;
+  }
+}
+
+        function resetForm() {
+            amountInput.value = '';
+            document.getElementById('paymentProof').value = '';
+        }
+
+        document.getElementById('paymentProof').addEventListener('change', validateForm);
+        amountInput.addEventListener('input', validateForm);
+    </script>
+</body>
+</html>
