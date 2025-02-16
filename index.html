@@ -12,7 +12,7 @@
   <script src="https://www.gstatic.com/firebasejs/8.3.3/firebase-firestore.js"></script>
   <style>
     body {
-      font-family: 'Cairo', sans-serif;
+      font-family: 'Tajawal', sans-serif;
       background-color: #fff;
       margin: 0;
       padding: 10px;
@@ -142,7 +142,7 @@
       border: 1px solid #e0e0e0;
     }
     
-    .nav-container {
+   .nav-container {
     position: fixed;
     bottom: 20px; /* لتقريب الأزرار السفلية */
     left: 5%;
@@ -159,14 +159,24 @@
     align-items: center; /* لمحاذاة العناصر عمودياً */
 }
 
+.nav button {
+    background-color: #fff;
+    border: none;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
 .nav button img {
     width: 30px;
     height: 30px;
 }
 
-.nav button {
- background-color: #fff;
- border: 0px solid #ddd;
+.nav button span {
+  font-family: 'Tajawal', sans-serif;
+    margin-top: 5px;
+    font-size: 15px;
+    color: #000;
 }
 
 .nav button.home-button {
@@ -174,12 +184,12 @@
     width: 60px;
     height: 60px;
     margin-top: -20px; /* رفع زر المنزل لأعلى */
-    background-color: #3C0D75; /* لون الخلفية */
+    
     border-radius: 50%; /* جعله دائري */
     padding: 10px;
-    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2); /* إضافة ظل */
-    transition: background-color 0.3s ease;
+    
 }
+
 
         /* تعديل الأيقونات */
         .icon-container {
@@ -230,20 +240,25 @@
   
   <div class="nav-container">
   <div class="nav">
-    <button onclick="navigateTo('go:redeem')" class="active">
-      <img src="https://img.icons8.com/ios-glyphs/999/5152FC/bank-card-back-side.png">
+    <button onclick="navigateTo('Profile.html')" class="active">
+      <img src="https://img.icons8.com/color-glass/999/admin-settings-male.png">
+      <span>Profil</span>
     </button>
-    <button onclick="navigateTo('go:store')" class="active">
-      <img src="https://img.icons8.com/material-rounded/999/5152FC/shop.png">
+    <button onclick="navigateTo('Plans.html')" class="active">
+      <img src="https://img.icons8.com/external-inipagistudio-mixed-inipagistudio/999/external-investment-startup-company-ecosystem-inipagistudio-mixed-inipagistudio.png">
+      <span>Mağaza</span>
     </button>
-    <button onclick="navigateTo('go:add')" class="home-button">
+    <button onclick="navigateTo('recharge.html')" class="home-button">
       <img src="https://img.icons8.com/metro/999/1BEDEC/plus-math.png">
+      <span>Para ekle</span>
     </button>
-    <button onclick="navigateTo('go:record')" class="active">
-      <img src="https://img.icons8.com/external-outline-black-m-oki-orlando/999/5152FC/external-credit-accounting-outline-black-m-oki-orlando.png">
+    <button onclick="navigateTo('referral.html')" class="active">
+      <img src="https://img.icons8.com/external-inipagistudio-mixed-inipagistudio/999/external-referral-offline-marketing-inipagistudio-mixed-inipagistudio.png">
+      <span>davet</span>
     </button>
-    <button onclick="navigateTo('go:Deposit1')" class="active">
-      <img src="https://img.icons8.com/external-outline-black-m-oki-orlando/999/5152FC/external-debit-accounting-outline-black-m-oki-orlando.png">
+    <button onclick="navigateTo('acompany.html')" class="active">
+      <img src="https://img.icons8.com/color-glass/999/company.png">
+      <span>Şirket</span>
     </button>
   </div>
 </div>
