@@ -1,181 +1,441 @@
 <!DOCTYPE html>
-<html lang="tr" dir="ltr">
+<html lang="tr">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Akıllı Yatırım Planları</title>
-    <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;700&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <title>نظام الإيداع المالي</title>
+    <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@300;400;500;700&display=swap" rel="stylesheet">
     <style>
+        :root {
+            --primary: #4361ee; /* لون رئيسي أكثر احترافية */
+            --secondary: #3f37c9; /* تدرج أغمق */
+            --accent: #4cc9f0; /* لون مميز */
+            --background: #fff; /* خلفية فاتحة مع لون ازرق خفيف */
+            --text: #2b2d42; /* نص أغمق لقابلية قراءة أفضل */
+            --success: #4CAF50; /* لون النجاح */
+            --error: #f44336; /* لون الخطأ */
+            --border: #e0e0e0;
+            --shadow: 0 8px 24px rgba(0, 0, 0, 0.08);
+            --gradient: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%);
+        }
+
         * {
             box-sizing: border-box;
+            font-family: 'Tajawal', sans-serif;
             margin: 0;
             padding: 0;
-            font-family: 'Tajawal', sans-serif;
         }
 
         body {
-            background: #fff;
+            background: var(--background);
+            min-height: 100vh;
             display: flex;
             justify-content: center;
             align-items: center;
-            min-height: 100vh;
-            padding: 20px;
+            padding: 10px;
         }
 
         .container {
-            display: flex;
-            flex-wrap: wrap;
-            gap: 40px;
-            justify-content: center;
-            max-width: 1200px;
+            padding: 1.5rem;
+            max-width: 520px;
+            width: 100%;
+            transform: translateY(0);
+            animation: containerEntrance 0.6s cubic-bezier(0.23, 1, 0.32, 1);
         }
 
-        .investment-card {
+        @keyframes containerEntrance {
+            0% { transform: translateY(20px); opacity: 0; }
+            100% { transform: translateY(0); opacity: 1; }
+        }
+
+        h1 {
+            color: var(--text);
+            text-align: center;
+            margin-bottom: 2rem;
+            font-size: 1.8rem;
+            font-weight: 700;
+            position: relative;
+            padding-bottom: 1rem;
+        }
+
+        h1::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 60px;
+            height: 3px;
+            background: var(--gradient);
+            border-radius: 2px;
+        }
+
+        .input-group, .copy-container, .upload-section {
+            margin-bottom: 1.8rem;
+            position: relative;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 0.8rem;
+            font-weight: 500;
+            color: var(--text);
+            font-size: 0.95rem;
+        }
+
+        input[type="number"] {
+            width: 100%;
+            padding: 1rem;
+            border: 2px solid var(--border);
+            border-radius: 12px;
+            font-size: 1rem;
+            transition: all 0.3s ease;
+            background: #fff;
+            appearance: none;
+        }
+
+        input[type="number"]:focus {
+            outline: none;
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px rgba(67, 97, 238, 0.1);
+        }
+
+        /* تحسينات مربع المعلومات */
+        .info-box {
+            background: #f8f9ff;
+            padding: 1.2rem;
+            border-radius: 14px;
+            border: 1px solid rgba(67, 97, 238, 0.1);
+            margin: 1.5rem 0;
+        }
+
+        .copy-container {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background: white;
+            padding: 0.8rem 1.2rem;
+            border-radius: 8px;
+            margin: 0.8rem 0;
+            box-shadow: 0 2px 6px rgba(0, 0, 0, 0.05);
+            transition: transform 0.2s ease;
+        }
+
+        .copy-container:hover {
+            transform: translateX(-5px);
+        }
+
+        .copy-btn {
+            background: var(--gradient);
+            color: white;
+            border: none;
+            padding: 0.3rem 1.0rem;
+            border-radius: 15px;
+            transition: all 0.3s ease;
             display: flex;
             align-items: center;
-            gap: 2px;
+            gap: 0.5rem;
+            font-weight: 500;
         }
 
-        .investment-box {
-            background: linear-gradient(135deg, #fff, #fff);
-            width: 500px;
-            height: 300px;
-            border-radius: 20px;
-            padding: 10px;
-            color: #000;
+        .copy-btn:hover {
+            opacity: 0.9;
+            box-shadow: 0 4px 12px rgba(67, 97, 238, 0.2);
+        }
+
+        /* تحسينات قسم رفع الملفات */
+        .upload-section {
+            border: 2px dashed var(--border);
+            padding: 2rem 1rem;
+            border-radius: 14px;
+            text-align: center;
+            transition: all 0.3s ease;
+            background: #fff;
+        }
+
+        .upload-section:hover {
+            border-color: var(--primary);
+            background: rgba(67, 97, 238, 0.03);
+        }
+
+        .upload-section.dragover {
+            border-color: var(--primary);
+            background: rgba(67, 97, 238, 0.05);
+        }
+
+        input[type="file"] {
+            width: 100%;
+            opacity: 0;
+            position: absolute;
+            left: 0;
+            top: 0;
+            height: 100%;
+        }
+
+        /* زر الإرسال المحسّن */
+        #submitBtn {
+            width: 100%;
+            padding: 1.0rem;
+            background: var(--gradient);
+            color: white;
+            border: none;
+            border-radius: 15px;
+            font-size: 1.1rem;
+            transition: all 0.3s ease;
             position: relative;
             overflow: hidden;
-            transition: transform 0.3s, box-shadow 0.3s;
-            border: 2px solid #4361ee;
+            font-weight: 600;
         }
 
-        .investment-box:hover {
-            transform: translateY(-10px);
-            box-shadow: 0 15px 30px rgba(76, 201, 240, 0.3);
+        #submitBtn:disabled {
+            opacity: 0.7;
+            cursor: not-allowed;
+            background: #e0e0e0;
         }
 
-        .box-header {
-            display: flex;
-            align-items: center;
-            gap: 15px;
-            margin-bottom: 25px;
+        #submitBtn:hover:not(:disabled) {
+            opacity: 0.95;
+            box-shadow: 0 6px 16px rgba(67, 97, 238, 0.2);
         }
 
-       .icon {
-    font-size: 2.5em;
-    background: linear-gradient(45deg, #4cc9f0, #3a86ff); /* تدرج لوني بين اللونين */
-    -webkit-background-clip: text; /* لقص الخلفية على النص */
-    background-clip: text;
-    color: transparent; /* جعل النص شفافًا بحيث يظهر التدرج */
+        /* تحسينات النوافذ المنبثقة */
+        .popup {
+    display: none; /* إخفاء النافذة عند تحميل الصفحة */
+    position: fixed;
+    top: 25px;
+    right: 25px;
+    padding: 1rem 2rem;
+    border-radius: 10px;
+    color: white;
+    z-index: 1000;
+    box-shadow: var(--shadow);
+    animation: slideIn 0.4s cubic-bezier(0.18, 0.89, 0.32, 1.28);
+    backdrop-filter: blur(5px);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    align-items: center;
+    gap: 0.8rem;
 }
 
-        .box-title {
-            font-size: 1.0em;
-            font-weight: bold;
+        .popup::before {
+            content: '';
+            width: 20px;
+            height: 20px;
+            background-size: contain;
         }
 
-        .details {
-            margin-bottom: 20px;
+        .popup-success {
+            background: rgba(76, 175, 80, 0.95);
         }
 
-        .price {
-            font-size: 2.5em;
-            color: #000;
-            margin-bottom: 10px;
+        .popup-error {
+            background: rgba(244, 67, 54, 0.95);
         }
 
-        .profit {
-            font-size: 1.2em;
-            color: #3f37c9;
+        /* تحميل متحرك أكثر أناقة */
+        .loader {
+            width: 24px;
+            height: 24px;
+            border: 3px solid rgba(255, 255, 255, 0.2);
+            border-top-color: white;
+            border-radius: 50%;
+            animation: spin 0.8s linear infinite;
+            display: none;
         }
 
-        .invest-btn {
-            padding: 15px 40px;
-            background: linear-gradient(to right, #4361ee, #3f37c9);
-            border: none;
-            border-radius: 30px;
-            color: white;
-            font-size: 1.1em;
-            transition: transform 0.3s;
-            white-space: nowrap;
-            height: fit-content;
+        /* مؤشرات التفاعل */
+        @keyframes spin {
+            to { transform: rotate(360deg); }
         }
 
-        .invest-btn:hover {
-            transform: scale(1.05);
-            box-shadow: 0 5px 15px rgba(58, 134, 255, 0.4);
+        @keyframes slideIn {
+            from { transform: translateX(100%); }
+            to { transform: translateX(0); }
         }
 
-        .ribbon {
-            position: absolute;
-            top: -10px;
-            left: -10px;
-            background: #3a86ff;
-            padding: 8px 35px;
-            transform: rotate(-45deg);
+        /* التأكيد على الحقول المطلوبة */
+        input:required + label::after {
+            content: '*';
+            color: var(--error);
+            margin-right: 4px;
             font-size: 0.9em;
-            font-weight: bold;
         }
-
-        @media (max-width: 1200px) {
-            .investment-card {
-                flex-direction: column;
-            }
-            
-            .investment-box {
-                width: 100%;
-                height: auto;
-                padding: 25px;
-            }
-            
-            .invest-btn {
-                width: 100%;
-                margin-top: 15px;
-            }
-        .icon-img {
-    width: 50px; /* ضبط الحجم حسب الحاجة */
-    height: 50px;
-    object-fit: contain; /* ضمان ظهور الصورة بالكامل */
-}
-
     </style>
 </head>
 <body>
+    
     <div class="container">
-        <!-- Plan 1 -->
-        <div class="investment-card">
-  <div class="investment-box">
-    <div class="box-header">
-      <img src="https://img.icons8.com/fluency/999/bank-building.png" class="icon-img">
-      <div class="box-title">Banka havalesi</div>
-    </div>
+  <h1>Para Yatırma</h1>
+  
+  <div class="input-group">
+    <label for="amount">Yatırılacak Tutar</label>
+    <input type="number" id="amount" placeholder="Lütfen tutarı girin en az 5 " min="5" required>
   </div>
-  <button class="invest-btn" onclick="invest(1)">Hemen Yatırım Yap <i class="fas fa-arrow-right"></i></button>
+  
+  <p style="text-align: center; font-size: 0.9rem; color: var(--text); margin-top: 1rem;">
+    ⏳ Paranız 5 iş saati içinde hesabınıza eklenecektir.
+  </p>
+  
+  <div class="info-box">
+    <div class="copy-container">
+        <span id="trc20" class="short-text" title="TUZpUwaGqoe7tbVAcKcmFmpz7v6JjzU4TS"> TUZpUwaGqoe7tbVAcKcmFmpz7v6JjzU4TS
+        </span>
+        <button class="copy-btn" onclick="copyText('trc20')">TRC20 Kopyala</button>
+    </div>
+    <div class="copy-container">
+        <span id="BEP20" class="short-text" title="0xcacc7db6a0a401fca73494f1ce2d41124958bae4"> 0xcacc7db6a0a401fca73494f1ce2d41124958bae4
+        </span>
+        <button class="copy-btn" onclick="copyText('BEP20')">BEP20 Kopyala</button>
+    </div>
 </div>
 
-<div class="investment-card">
-  <div class="investment-box">
-    <div class="box-header">
-      <img src="https://img.icons8.com/color/999/tether--v2.png" class="icon-img">
-      <div class="box-title">USDT</div>
-    </div>
-    <div class="details">
+<style>
+    .short-text {
+        display: inline-block;
+        max-width: 150px; /* تحديد أقصى عرض للنص */
+        overflow: hidden;
+        white-space: nowrap;
+        text-overflow: ellipsis;
+        vertical-align: middle;
+    }
+</style>
 
-    </div>
+<script>
+    function copyText(elementId) {
+        const text = document.getElementById(elementId).getAttribute("title");
+        navigator.clipboard.writeText(text).then(() => {
+            alert("Kopyalandı: " + text);
+        });
+    }
+</script>
+  
+  <p style="text-align: center; font-size: 0.9rem; color: var(--text); margin-top: 1rem;">
+    ⚠️ Lütfen önce ödemeyi yapın, ardından talebinizi gönderin.
+  </p>
+  
+  <div class="upload-section">
+    <label for="paymentProof">Ödeme kanıtının ekran görüntüsünü ekleyin</label>
+    <input type="file" id="paymentProof" accept="image/*" required>
   </div>
-  <button class="invest-btn" onclick="invest(2)">Hemen Yatırım Yap <i class="fas fa-arrow-right"></i></button>
+  
+  <button id="submitBtn" onclick="submitRequest()">
+    <span id="btnText">Talebi Gönder</span>
+    <div class="loader" id="loader"></div>
+  </button>
 </div>
+
+    <div class="popup" id="popup"></div>
+
+    <!-- Firebase Libraries -->
+    <script src="https://www.gstatic.com/firebasejs/8.3.3/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.3.3/firebase-firestore.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.3.3/firebase-storage.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.3.3/firebase-auth.js"></script>
 
     <script>
-        function invest(planNumber) {
-            const plans = {
-                1: 'bank.html',
-                2: 'usdt.html'
-                
-            };
-            window.location.href = plans[planNumber];
+        const firebaseConfig = {
+  apiKey: "AIzaSyCAvlDoXDOqlXShRJHXXjBc1HQCptkROP0",
+  authDomain: "palmiye105.firebaseapp.com",
+  projectId: "palmiye105",
+  storageBucket: "palmiye105.firebasestorage.app",
+  messagingSenderId: "858789700392",
+  appId: "1:858789700392:web:bf69a5e34592c38cc8661d"
+};
+
+        if (!firebase.apps.length) {
+            firebase.initializeApp(firebaseConfig);
         }
+
+        const db = firebase.firestore();
+        const storage = firebase.storage();
+        const auth = firebase.auth();
+
+        const amountInput = document.getElementById('amount');
+        const submitBtn = document.getElementById('submitBtn');
+        const loader = document.getElementById('loader');
+        const btnText = document.getElementById('btnText');
+        const popup = document.getElementById('popup');
+
+        function copyText(elementId) {
+  const text = document.getElementById(elementId).textContent;
+  navigator.clipboard.writeText(text).then(() => {
+    showPopup('Başarıyla kopyalandı', 'success');
+  });
+}
+
+function validateForm() {
+  const isValid = amountInput.value >= 5 &&
+    document.getElementById('paymentProof').files.length > 0;
+  
+  submitBtn.disabled = !isValid;
+  return isValid;
+}
+
+function showPopup(message, type) {
+  popup.className = `popup popup-${type}`;
+  popup.textContent = message;
+  popup.style.display = 'block';
+  
+  setTimeout(() => {
+    popup.style.display = 'none';
+  }, 3000);
+}
+
+async function submitRequest() {
+  if (!validateForm()) {
+    showPopup('Lütfen tüm alanları doğru şekilde doldurun', 'error');
+    return;
+  }
+  
+  btnText.style.display = 'none';
+  loader.style.display = 'block';
+  submitBtn.disabled = true;
+  
+  try {
+    const user = auth.currentUser;
+    const paymentProof = document.getElementById('paymentProof').files[0];
+    
+    const userDoc = await db.collection('users').doc(user.uid).get();
+    if (!userDoc.exists) {
+      throw new Error('Kullanıcı bulunamadı');
+    }
+    
+    const userData = userDoc.data();
+    const userName = userData.name || 'Bilinmeyen Kullanıcı';
+    const uniqueId = userData.uniqueId || 'Bilinmiyor';
+    
+    const storageRef = storage.ref(`proofs/${user.uid}/${paymentProof.name}`);
+    await storageRef.put(paymentProof);
+    const proofUrl = await storageRef.getDownloadURL();
+    
+    await db.collection('paymentRequests').add({
+      userId: user.uid,
+      userName: userName,
+      uniqueId: uniqueId,
+      amount: parseFloat(amountInput.value),
+      proofUrl: proofUrl,
+      timestamp: firebase.firestore.FieldValue.serverTimestamp(),
+      status: 'İnceleniyor'
+    });
+    
+    showPopup('Talebiniz başarıyla gönderildi, lütfen birkaç saat bekleyin', 'success');
+    resetForm();
+  } catch (error) {
+    console.error('Hata:', error);
+    showPopup('Gönderim sırasında hata oluştu: ' + error.message, 'error');
+  } finally {
+    btnText.style.display = 'block';
+    loader.style.display = 'none';
+    submitBtn.disabled = false;
+  }
+}
+
+        function resetForm() {
+            amountInput.value = '';
+            document.getElementById('paymentProof').value = '';
+        }
+
+        document.getElementById('paymentProof').addEventListener('change', validateForm);
+        amountInput.addEventListener('input', validateForm);
     </script>
 </body>
 </html>
