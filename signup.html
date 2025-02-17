@@ -206,101 +206,111 @@
     </div>
 
     <script>
-        // Firebase ayarları
-        const firebaseConfig = {
-  apiKey: "AIzaSyC4aW-Mr469PsIYT8n3jL--GbtRU5OTWdo",
-  authDomain: "smart-pay-6a9b8.firebaseapp.com",
-  databaseURL: "https://smart-pay-6a9b8-default-rtdb.firebaseio.com",
-  projectId: "smart-pay-6a9b8",
-  storageBucket: "smart-pay-6a9b8.appspot.com",
-  messagingSenderId: "9418007073",
-  appId: "1:9418007073:web:72e0144eb56524fc263960"
-};
-
-        // Firebase başlatma
-        firebase.initializeApp(firebaseConfig);
-        const db = firebase.firestore();
-
-        // Pop-up açma fonksiyonu
-        function openPopup(message) {
-            document.getElementById('popup-message').innerText = message;
-            document.getElementById('popup').style.display = 'flex';
+  // Firebase ayarları
+  const firebaseConfig = {
+    apiKey: "AIzaSyC4aW-Mr469PsIYT8n3jL--GbtRU5OTWdo",
+    authDomain: "smart-pay-6a9b8.firebaseapp.com",
+    databaseURL: "https://smart-pay-6a9b8-default-rtdb.firebaseio.com",
+    projectId: "smart-pay-6a9b8",
+    storageBucket: "smart-pay-6a9b8.appspot.com",
+    messagingSenderId: "9418007073",
+    appId: "1:9418007073:web:72e0144eb56524fc263960"
+  };
+  
+  // Firebase başlatma
+  firebase.initializeApp(firebaseConfig);
+  const db = firebase.firestore();
+  
+  // Pop-up açma fonksiyonu
+  function openPopup(message) {
+    document.getElementById('popup-message').innerText = message;
+    document.getElementById('popup').style.display = 'flex';
+  }
+  
+  // Pop-up kapama fonksiyonu
+  function closePopup() {
+    document.getElementById('popup').style.display = 'none';
+  }
+  
+  // Hesap oluşturma fonksiyonu
+  function signUp() {
+    const name = document.getElementById("name").value;
+    const email = document.getElementById("email").value;
+    const password = document.getElementById("password").value;
+    const phone = document.getElementById("phone").value;
+    const submitButton = document.querySelector(".button-submit");
+    
+    // تعطيل الزر أثناء إنشاء الحساب
+    submitButton.disabled = true;
+    
+    if (!name || !email || !password || !phone) {
+      openPopup("Lütfen tüm alanları doldurun.");
+      submitButton.disabled = false; // إعادة تمكين الزر
+      return;
+    }
+    
+    const passwordRegex = /^(?=.*[A-Za-z])(?=.*\d)[A-Za-z\d]{6,}$/;
+    if (!passwordRegex.test(password)) {
+      openPopup("Şifre en az 6 karakter olmalı, harf ve rakam içermelidir.");
+      submitButton.disabled = false; // إعادة تمكين الزر
+      return;
+    }
+    
+    firebase.auth().fetchSignInMethodsForEmail(email)
+      .then((methods) => {
+        if (methods.length > 0) {
+          openPopup("Bu e-posta adresi zaten kullanılıyor.");
+          submitButton.disabled = false; // إعادة تمكين الزر
+        } else {
+          firebase.auth().createUserWithEmailAndPassword(email, password)
+            .then((userCredential) => {
+              const user = userCredential.user;
+              db.collection("users").doc(user.uid).set({
+                name: name,
+                email: email,
+                phone: phone, // Telefon numarasını kaydet
+                uniqueId: generateUniqueId(),
+                referralCode: generateReferralCode(),
+                balance: 0,
+                verified: false
+              }).then(() => {
+                openPopup("Hesap başarıyla oluşturuldu!");
+                setTimeout(() => {
+                  window.location.href = "index.html";
+                }, 2000);
+              }).catch((error) => {
+                openPopup("Bilgiler kaydedilirken bir hata oluştu: " + error.message);
+                submitButton.disabled = false; // إعادة تمكين الزر
+              });
+            }).catch((error) => {
+              openPopup("Hata: " + error.message);
+              submitButton.disabled = false; // إعادة تمكين الزر
+            });
         }
-
-        // Pop-up kapama fonksiyonu
-        function closePopup() {
-            document.getElementById('popup').style.display = 'none';
-        }
-
-        // Hesap oluşturma fonksiyonu
-        function signUp() {
-            const name = document.getElementById("name").value;
-            const email = document.getElementById("email").value;
-            const password = document.getElementById("password").value;
-            const phone = document.getElementById("phone").value;
-
-            if (!name || !email || !password || !phone) {
-                openPopup("Lütfen tüm alanları doldurun.");
-                return;
-            }
-
-            const passwordRegex = /^(?=.*[A-Za-z])(?=.*\d)[A-Za-z\d]{6,}$/;
-            if (!passwordRegex.test(password)) {
-                openPopup("Şifre en az 6 karakter olmalı, harf ve rakam içermelidir.");
-                return;
-            }
-
-            firebase.auth().fetchSignInMethodsForEmail(email)
-                .then((methods) => {
-                    if (methods.length > 0) {
-                        openPopup("Bu e-posta adresi zaten kullanılıyor.");
-                    } else {
-                        firebase.auth().createUserWithEmailAndPassword(email, password)
-                            .then((userCredential) => {
-                                const user = userCredential.user;
-                                db.collection("users").doc(user.uid).set({
-                                    name: name,
-                                    email: email,
-                                    phone: phone, // Telefon numarasını kaydet
-                                    uniqueId: generateUniqueId(),
-                                    referralCode: generateReferralCode(),
-                                    balance: 0,
-                                    verified: false
-                                }).then(() => {
-                                    openPopup("Hesap başarıyla oluşturuldu!");
-                                    setTimeout(() => {
-                                        window.location.href = "index.html";
-                                    }, 2000);
-                                }).catch((error) => {
-                                    openPopup("Bilgiler kaydedilirken bir hata oluştu: " + error.message);
-                                });
-                            }).catch((error) => {
-                                openPopup("Hata: " + error.message);
-                            });
-                    }
-                }).catch((error) => {
-                    openPopup("Hata: " + error.message);
-                });
-        }
-
-        // Benzersiz ID oluşturma fonksiyonu
-        function generateUniqueId() {
-            let uniqueId = '101';
-            for (let i = 0; i < 10; i++) {
-                uniqueId += Math.floor(Math.random() * 10);
-            }
-            return uniqueId;
-        }
-
-        // Yönlendirme kodu oluşturma fonksiyonu
-        function generateReferralCode() {
-            let code = '';
-            const characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
-            for (let i = 0; i < 7; i++) {
-                code += characters.charAt(Math.floor(Math.random() * characters.length));
-            }
-            return code;
-        }
-    </script>
+      }).catch((error) => {
+        openPopup("Hata: " + error.message);
+        submitButton.disabled = false; // إعادة تمكين الزر
+      });
+  }
+  
+  // Benzersiz ID oluşturma fonksiyonu
+  function generateUniqueId() {
+    let uniqueId = '101';
+    for (let i = 0; i < 10; i++) {
+      uniqueId += Math.floor(Math.random() * 10);
+    }
+    return uniqueId;
+  }
+  
+  // Yönlendirme kodu oluşturma fonksiyonu
+  function generateReferralCode() {
+    let code = '';
+    const characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
+    for (let i = 0; i < 7; i++) {
+      code += characters.charAt(Math.floor(Math.random() * characters.length));
+    }
+    return code;
+  }
+</script>
 </body>
 </html>
