@@ -136,13 +136,24 @@
   font-size: 14px;
   margin-top: 15px;
 }
+
+.logo {
+    position: absolute;
+    top: 20px; /* يمكن تعديل المسافة من الأعلى */
+    left: 50%;
+    transform: translateX(-50%);
+    width: 100px; /* تحديد عرض الصورة حسب الحاجة */
+    height: auto;
+}
+
     </style>
 </head>
 <body>
     <!-- Yeni yapı -->
     <form class="form">
+      <img src="https://up6.cc/2025/02/173927831537675.png" alt="Logo" class="logo">
         <div class="flex-column">
-            <label>Ad</label>
+            <label>isim</label>
   </div>
   <div class="inputForm">
     <svg
@@ -295,8 +306,8 @@
   
   // Benzersiz ID oluşturma fonksiyonu
   function generateUniqueId() {
-    let uniqueId = '101';
-    for (let i = 0; i < 10; i++) {
+    let uniqueId = '60';
+    for (let i = 0; i < 5; i++) {
       uniqueId += Math.floor(Math.random() * 10);
     }
     return uniqueId;
