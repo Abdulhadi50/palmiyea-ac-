@@ -1,0 +1,264 @@
+<!DOCTYPE html>
+<html lang="ar">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>دعوة الأصدقاء</title>
+    <script src="https://www.gstatic.com/firebasejs/8.3.3/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.3.3/firebase-auth.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.3.3/firebase-firestore.js"></script>
+    <style>
+        body {
+            font-family: 'Cairo', sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #fff;
+            text-align: center;
+            direction: rtl;
+            user-select: none;
+        }
+        .container {
+            margin-top: 50px;
+            padding: 20px;
+            display: inline-block;
+            width: 90%;
+            max-width: 350px;
+        }
+        input {
+          background-color: #F8F8F8;
+          width: 91%;
+          padding: 15px;
+          font-size: 15px;
+          border: 1px solid #ccc;
+          border-radius: 15px;
+          outline: none;
+          margin-top: 20px;
+          color: #000
+        }
+        
+        input:focus {
+          border-color: #5152FC;
+        }
+        button {
+            width: 100%;
+            padding: 10px;
+            background: linear-gradient(to right, #5152FC, #5152FC);
+            border: none;
+            border-radius: 15px;
+            color: #FFF;
+            font-size: 16px;
+            transition: background-color 0.3s;
+            margin-top: 20px;
+        }
+        .code-display {
+            background-color: #F8F8F8;
+            background-image: url('https://up6.cc/2024/11/173278315505861.jpg');
+            background-size: cover;
+            background-position: center;
+            border-radius: 15px;
+            padding: 15px;
+            margin-top: 20px;
+            color: #000;
+        }
+        .popup {
+            display: none;
+            position: fixed;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.6);
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+        }
+        .popup-content {
+            background-color: #F8F8F8;
+            border-radius: 25px;
+            padding: 30px;
+            text-align: center;
+            width: 80%;
+            max-width: 400px;
+            position: relative;
+            box-shadow: 0 0 20px rgba(0, 0, 0, 0.2);
+            color: #000;
+        }
+        .close-btn {
+            position: absolute;
+            top: 10px;
+            right: 15px;
+            font-size: 24px;
+            color: #000;
+        }
+        h2 {
+            color: #000;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h2>دعوة الأصدقاء واحصل على مكافآت لكل دعوة صالحة ستحصل على 5₺</h2>
+        <div class="code-display">
+            <p>كود الإحالة الخاص بك:</p>
+            <span id="referral-code"></span>
+            <button onclick="copyReferralCode()">نسخ الكود</button>
+        </div>
+        <button id="verify-email-btn" onclick="verifyEmail()">التحقق من البريد الإلكتروني</button>
+        <input type="text" id="input-referral-code" placeholder="أدخل كود الإحالة واحصل على 3 ₺" style="display: none;" />
+        <button onclick="submitReferralCode()">إدخال كود الإحالة</button>
+        <button onclick="shareReferral()">مشاركة كود الإحالة</button>
+    </div>
+    <div class="popup" id="popup">
+        <div class="popup-content">
+            <span class="close-btn" onclick="closePopup()">×</span>
+            <p id="popup-message">رسالة منبثقة</p>
+            <button onclick="closePopup()">إغلاق</button>
+        </div>
+    </div>
+    <script>
+        const firebaseConfig = {
+            apiKey: "AIzaSyCd4kBTwhKeJCeuJiaErE0RHX2m8ZpmRtc",
+            authDomain: "smart-pay-6a9b8.firebaseapp.com",
+            projectId: "smart-pay-6a9b8",
+            storageBucket: "smart-pay-6a9b8.appspot.com",
+            messagingSenderId: "9418007073",
+            appId: "1:9418007073:web:0f981978bfd2d8cd263960"
+        };
+
+        firebase.initializeApp(firebaseConfig);
+        const db = firebase.firestore();
+
+        function openPopup(message) {
+            document.getElementById('popup-message').innerText = message;
+            document.getElementById('popup').style.display = 'flex';
+        }
+
+        function closePopup() {
+            document.getElementById('popup').style.display = 'none';
+        }
+
+        function copyReferralCode() {
+            const code = document.getElementById("referral-code").innerText;
+            navigator.clipboard.writeText(code).then(() => {
+                openPopup("تم نسخ كود الإحالة بنجاح!");
+            });
+        }
+
+        function displayReferralCode() {
+            firebase.auth().onAuthStateChanged((user) => {
+                if (user && user.emailVerified) {
+                    db.collection("users").doc(user.uid).get().then((doc) => {
+                        if (doc.exists) {
+                            const referralCode = doc.data().referralCode;
+                            document.getElementById("referral-code").innerText = referralCode;
+                        } else {
+                            openPopup("لم يتم العثور على بيانات المستخدم.");
+                        }
+                    }).catch((error) => {
+                        openPopup("خطأ: " + error.message);
+                    });
+                } else if (user && !user.emailVerified) {
+                    openPopup("يرجى التحقق من بريدك الإلكتروني.");
+                } else {
+                    openPopup("يجب عليك تسجيل الدخول لعرض كود الإحالة.");
+                }
+            });
+        }
+
+        function verifyEmail() {
+            firebase.auth().onAuthStateChanged((user) => {
+                if (user && !user.emailVerified) {
+                    user.sendEmailVerification().then(() => {
+                        openPopup("تم إرسال رسالة التحقق إلى بريدك الإلكتروني.");
+                    }).catch((error) => {
+                        openPopup("حدث خطأ أثناء إرسال التحقق: " + error.message);
+                    });
+                } else if (user && user.emailVerified) {
+                    openPopup("تم التحقق من بريدك الإلكتروني مسبقاً.");
+                    displayReferralCode();
+                    document.getElementById("input-referral-code").style.display = "block";
+                } else {
+                    openPopup("يجب عليك تسجيل الدخول للتحقق من البريد الإلكتروني.");
+                }
+            });
+        }
+
+        function submitReferralCode() {
+            const inputCode = document.getElementById("input-referral-code").value.trim();
+            firebase.auth().onAuthStateChanged((user) => {
+                if (user) {
+                    db.collection("users").doc(user.uid).get().then((userDoc) => {
+                        if (userDoc.exists && !userDoc.data().referralUsed) {
+                            const userReferralCode = userDoc.data().referralCode;
+                            if (inputCode === userReferralCode) {
+                                openPopup("لا يمكنك إدخال كود الإحالة الخاص بك.");
+                                return;
+                            }
+                            db.collection("users").where("referralCode", "==", inputCode).get().then((querySnapshot) => {
+                                if (!querySnapshot.empty) {
+                                    querySnapshot.forEach((doc) => {
+                                        const referrerId = doc.id;
+                                        db.collection("users").doc(user.uid).update({
+                                            balance: firebase.firestore.FieldValue.increment(3),
+                                            referralUsed: true
+                                        });
+                                        db.collection("users").doc(referrerId).update({
+                                            balance: firebase.firestore.FieldValue.increment(5)
+                                        });
+                                        openPopup("تم إدخال كود الإحالة بنجاح! حصلت على 3 ليرة.");
+                                        document.getElementById("input-referral-code").style.display = 'none';
+                                    });
+                                } else {
+                                    openPopup("كود الإحالة المدخل غير صحيح.");
+                                }
+                            }).catch((error) => {
+                                openPopup("حدث خطأ أثناء التحقق: " + error.message);
+                            });
+                        } else {
+                            openPopup("كود الإحالة مُستخدم مسبقاً.");
+                        }
+                    }).catch((error) => {
+                        openPopup("خطأ: " + error.message);
+                    });
+                } else {
+                    openPopup("يجب عليك تسجيل الدخول لإدخال كود الإحالة.");
+                }
+            });
+        }
+
+    function shareReferral() {
+        const referralCode = document.getElementById("referral-code").innerText;
+        const shareText = `استخدم كود الإحالة الخاص بي: ${referralCode} واحصل على مكافآت عند التسجيل. حمل التطبيق من هنا: https://smarpay.netlify.app`;
+        const shareUrl = `https://smarpay.netlify.app`;
+
+        if (navigator.share) {
+            navigator.share({
+                title: 'تحميل التطبيق',
+                text: shareText,
+                url: shareUrl
+            }).catch((error) => {
+                openPopup("حدث خطأ أثناء المشاركة: " + error.message);
+            });
+        } else {
+            openPopup("المشاركة غير مدعومة على هذا الجهاز.");
+        }
+    }
+
+        window.onload = function() {
+            firebase.auth().onAuthStateChanged((user) => {
+                if (user) {
+                    if (user.emailVerified) {
+                        displayReferralCode();
+                        document.getElementById("verify-email-btn").style.display = "none";
+                        document.getElementById("input-referral-code").style.display = "block";
+                    } else {
+                        document.getElementById("verify-email-btn").style.display = "block";
+                    }
+                } else {
+                    openPopup("يجب عليك تسجيل الدخول لعرض كود الإحالة.");
+                }
+            });
+        };
+    </script>
+</body>
+</html>
