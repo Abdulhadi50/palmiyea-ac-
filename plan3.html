@@ -1,0 +1,346 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Günlük Görevler</title>
+  <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;700&display=swap" rel="stylesheet">
+  <style>
+    body {
+      font-family: 'Tajawal', sans-serif;
+      direction: rtl;
+      text-align: center;
+      background-color: #fff;
+      color: white;
+      margin: 0;
+      padding: 20px;
+    }
+    .container {
+      max-width: 400px;
+      margin: auto;
+      padding: 20px;
+      background: #3f37c9;
+      border-radius: 20px;
+      box-shadow: 0 0 10px rgba(0, 54, 255, 0.78);
+    }
+    .balance {
+      font-size: 20px;
+      margin-bottom: 15px;
+    }
+    .gov-card {
+      padding: 15px;
+      background: #4361ee;
+      border-radius: 15px;
+      margin-top: 15px;
+    }
+    .gov-title {
+      font-size: 22px;
+      margin-bottom: 10px;
+    }
+    .gov-details {
+      font-size: 16px;
+      margin-bottom: 10px;
+    }
+    .gov-button {
+      padding: 10px;
+      width: 100%;
+      background: #00fff5;
+      color: #16213e;
+      border: none;
+      border-radius: 15px;
+      font-size: 18px;
+      font-weight: bold;
+    }
+    .gov-button:disabled {
+      background: gray;
+      cursor: not-allowed;
+    }
+    .timer {
+      font-size: 18px;
+      margin-top: 10px;
+      color: #00fff5;
+    }
+    /* Popup Tasarımı */
+    .popup {
+      display: none;
+      position: fixed;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      background: linear-gradient(to right, #4361ee, #3f37c9);
+      color: #fff;
+      padding: 30px;
+      border-radius: 20px;
+      z-index: 1000;
+      font-size: 18px;
+    }
+    .popup button {
+      background-color: #00fff5;
+      color: #16213e;
+      border: none;
+      padding: 8px 12px;
+      border-radius: 15px;
+      font-size: 16px;
+    }
+    /* Popup arka planı */
+    .overlay {
+      display: none;
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background-color: rgba(0, 0, 0, 0.7);
+      z-index: 999;
+    }
+    
+    .gov-image {
+      width: 100%;  /* Genişlik azaltma */
+      height: 100%; /* Yükseklik azaltma */
+      border-radius: 10px; /* Köşeleri yuvarlama */
+      margin-bottom: 10px;
+      object-fit: cover; /* Resmin uyumlu olması */
+    }
+
+    .ad-banner {
+      width: 315px;
+      margin: 20px auto;
+      padding: 15px;
+      background: #3f37c9;
+      border-radius: 15px;
+      box-shadow: 0 4px 10px rgba(0, 0, 0, 0.5);
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      position: relative; /* Needed for positioning the AD label */
+    }
+    .ad-banner iframe {
+      border-radius: 10px;
+    }
+    /* AD Label - Small Yellow Box */
+    .ad-label {
+      position: absolute;
+      top: 1px;
+      left: 10px;
+      width: 20px;
+      height: 20px;
+      background-color: #00fff5;
+      color: black;
+      font-weight: bold;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      border-radius: 5px;
+      font-size: 10px;
+    }
+    
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="balance">Bakiyeniz: <span id="balance">0</span> TL</div>
+    <div id="govContainer"></div>
+  </div>
+  
+  <div id="govUpdateInfo" style="margin-top: 20px; font-size: 16px; color: #000;">
+  Görevler her gün saat 8:00'da güncellenmektedir. <br>
+  Sonraki güncelleme: <span id="countdown"></span>
+</div>
+
+  <!-- Popup Overlay -->
+  <div class="overlay" id="overlay"></div>
+
+  <!-- Popup İçeriği -->
+  <div class="popup" id="popup">
+    <p id="popupMessage"></p>
+    <button onclick="closePopup()">Kapat</button>
+  </div>
+
+  <!-- تحديث مكتبات Firebase إلى الإصدار 11.3.1 (Compat) -->
+<script src="https://www.gstatic.com/firebasejs/8.3.3/firebase-app.js"></script>
+<script src="https://www.gstatic.com/firebasejs/8.3.3/firebase-auth.js"></script>
+<script src="https://www.gstatic.com/firebasejs/8.3.3/firebase-firestore.js"></script>
+
+<script>
+  // بدء تهيئة Firebase
+  const firebaseConfig = {
+  apiKey: "AIzaSyC4aW-Mr469PsIYT8n3jL--GbtRU5OTWdo",
+  authDomain: "smart-pay-6a9b8.firebaseapp.com",
+  databaseURL: "https://smart-pay-6a9b8-default-rtdb.firebaseio.com",
+  projectId: "smart-pay-6a9b8",
+  storageBucket: "smart-pay-6a9b8.appspot.com",
+  messagingSenderId: "9418007073",
+  appId: "1:9418007073:web:72e0144eb56524fc263960"
+};
+  firebase.initializeApp(firebaseConfig);
+  const auth = firebase.auth();
+  const db = firebase.firestore();
+  
+  let currentUser = null;
+  let userData = null;
+  let activeGov = null;
+  let isProcessing = false;
+  
+  auth.onAuthStateChanged(async (user) => {
+    if (user) {
+      currentUser = user;
+      await loadUserData();
+      await loadActiveGov();
+      renderGov();
+    } else {
+      window.location.href = 'login.html';
+    }
+  });
+  
+  async function loadUserData() {
+    const userDoc = await db.collection('users').doc(currentUser.uid).get();
+    if (userDoc.exists) {
+      userData = userDoc.data();
+    } else {
+      userData = { balance: 0, completedGovVersion: null };
+      await db.collection('users').doc(currentUser.uid).set(userData);
+    }
+    document.getElementById('balance').textContent = userData.balance;
+  }
+  
+  async function loadActiveGov() {
+    const govDoc = await db.collection('govs').doc('activeGov1').get();
+    if (govDoc.exists) {
+      activeGov = govDoc.data();
+    } else {
+      activeGov = null;
+    }
+  }
+  
+  function renderGov() {
+    const container = document.getElementById('govContainer');
+    if (!activeGov) {
+      container.innerHTML = "<p>Şu anda görev bulunmamaktadır.</p>";
+      return;
+    }
+    
+    const completed = userData.completedGovVersion === activeGov.version;
+    const imageUrl = activeGov.imageUrl || 'default-gov.jpg'; // Varsayılan resim
+    
+    container.innerHTML = `
+      <div class="gov-card">
+        <img src="${imageUrl}" alt="Görev Resmi" class="gov-image">
+        <h3 class="gov-title">${activeGov.title}</h3>
+        <div class="gov-details">
+          Satın Alma Fiyatı: <b>${activeGov.price}</b> TL<br>
+          Kar: <b>${(activeGov.price * activeGov.profit) / 100}</b> TL
+        </div>
+        ${completed ? 
+          `<p style="color:lime;">✔ Görev tamamlandı</p>` : 
+          `<button id="buyButton" class="gov-button" onclick="startGov(${activeGov.price})" ${userData.balance < activeGov.price ? 'disabled' : ''}>
+            Görevi Satın Al
+          </button>
+          <div class="timer" id="timer"></div>`
+        }
+      </div>
+    `;
+  }
+  
+  async function startGov(price) {
+    if (isProcessing) return;
+    if (userData.balance < price) {
+      showPopup("Yetersiz bakiye!");
+      return;
+    }
+    
+    isProcessing = true;
+    const buyButton = document.getElementById('buyButton');
+    buyButton.disabled = true;
+    buyButton.textContent = "İşleniyor...";
+    
+    await db.collection('users').doc(currentUser.uid).update({
+      balance: firebase.firestore.FieldValue.increment(-price)
+    });
+    userData.balance -= price;
+    document.getElementById('balance').textContent = userData.balance;
+    
+    let timer = 5;
+    const timerElement = document.getElementById('timer');
+    const interval = setInterval(() => {
+      if (timer <= 0) {
+        clearInterval(interval);
+        completeGov(price);
+      } else {
+        timerElement.textContent = `${timer} saniye bekleyin...`;
+        timer--;
+      }
+    }, 1000);
+  }
+  
+  async function completeGov(price) {
+    const profit = (price * activeGov.profit) / 100;
+    const total = price + profit;
+    
+    await db.collection('users').doc(currentUser.uid).update({
+      balance: firebase.firestore.FieldValue.increment(total),
+      completedGovVersion: activeGov.version
+    });
+    
+    userData.balance += total;
+    userData.completedGovVersion = activeGov.version;
+    document.getElementById('balance').textContent = userData.balance;
+    
+    showPopup(`✅ ${total} TL geri alındı (Tutar + Kar)`);
+    
+    const buyButton = document.getElementById('buyButton');
+    buyButton.disabled = false;
+    buyButton.textContent = "Görevi Satın Al";
+    
+    isProcessing = false;
+    renderGov();
+  }
+  
+  function showPopup(message) {
+    const popup = document.getElementById('popup');
+    const overlay = document.getElementById('overlay');
+    const popupMessage = document.getElementById('popupMessage');
+    
+    popupMessage.textContent = message;
+    
+    popup.style.display = 'block';
+    overlay.style.display = 'block';
+  }
+  
+  function closePopup() {
+    const popup = document.getElementById('popup');
+    const overlay = document.getElementById('overlay');
+    
+    popup.style.display = 'none';
+    overlay.style.display = 'none';
+  }
+  
+  function startCountdown() {
+  function updateCountdown() {
+    const now = new Date();
+    const target = new Date();
+    target.setHours(20, 0, 0, 0); // 20:00:00 ayarla
+    
+    if (now >= target) {
+      target.setDate(target.getDate() + 1); // Eğer 20:00 geçtiyse bir sonraki güne al
+    }
+    
+    const diff = target - now; // Kalan milisaniyeyi hesapla
+    
+    const hours = Math.floor(diff / (1000 * 60 * 60));
+    const minutes = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
+    const seconds = Math.floor((diff % (1000 * 60)) / 1000);
+    
+    document.getElementById('countdown').textContent =
+      `${hours} saat ${minutes} dakika ${seconds} saniye`;
+    
+    setTimeout(updateCountdown, 1000); // Her saniye güncelle
+  }
+  
+  updateCountdown();
+}
+
+startCountdown(); // Sayfa yüklendiğinde başlat
+
+</script>
+</body>
+</html>
