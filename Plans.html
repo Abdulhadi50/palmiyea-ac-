@@ -148,17 +148,44 @@
         <div class="investment-card">
   <div class="investment-box">
     <div class="box-header">
-      <img src="https://up6.cc/2025/02/173927831537675.png">
-      <div class="box-title">Palmiye ağaçları</div>
+      <img src="https://up6.cc/2025/02/173979298224961.png">
+      <div class="box-title">VIP 1</div>
     </div>
-    <div class="profit">Günlük Kar: değişken</div>
+    <div class="profit">fiyat : 150TL</div>
+    <div class="profit">Görevler : 1</div>
   </div>
   <button class="invest-btn" onclick="invest(1)">Hemen Yatırım Yap <i class="fas fa-arrow-right"></i></button>
+</div>
+
+<div class="investment-card">
+  <div class="investment-box">
+    <div class="box-header">
+      <img src="https://up6.cc/2025/02/173979298226782.png">
+      <div class="box-title">VIP 2</div>
+    </div>
+    <div class="profit">fiyat : 550TL</div>
+    <div class="profit">Görevler : 1</div>
+  </div>
+  <button class="invest-btn" onclick="invest(2)">Hemen Yatırım Yap <i class="fas fa-arrow-right"></i></button>
+</div>
+
+<div class="investment-card">
+  <div class="investment-box">
+    <div class="box-header">
+      <img src="https://up6.cc/2025/02/173979298228243.png">
+      <div class="box-title">VIP 3</div>
+    </div>
+    <div class="profit">fiyat : 1200TL</div>
+    <div class="profit">Görevler : 1</div>
+  </div>
+  <button class="invest-btn" onclick="invest(3)">Hemen Yatırım Yap <i class="fas fa-arrow-right"></i></button>
 </div>
     <script>
         function invest(planNumber) {
             const plans = {
-                1: 'plan1.html'
+                1: 'plan1.html',
+                2: 'plan2.html',
+                3: 'plan3.html'
             };
             window.location.href = plans[planNumber];
         }
