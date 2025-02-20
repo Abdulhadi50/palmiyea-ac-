@@ -114,9 +114,9 @@
     .promo-banner {
       width: 100%;
       height: 150px;
-      border-radius: 12px;
+      border-radius: 15px;
       margin: 20px 0;
-      background: url('https://up6.cc/2025/02/173912551640461.jpeg') no-repeat center/cover;
+      background: url('https://up6.cc/2025/02/174004819420991.jpg') no-repeat center/cover;
     }
 
     .winners-section {
@@ -190,14 +190,50 @@
     
 }
 
+.button-container {
+  display: flex;
+  justify-content: space-between;
+  margin-top: 20px;
+}
 
-        /* تعديل الأيقونات */
-        .icon-container {
-            display: flex;
-            justify-content: space-between;
-            margin-bottom: 20px;
-        }
-        
+button {
+  padding: 5px 10px;
+  border: none;
+  border: 1.2px solid #ddd;
+  border-radius: 50px;
+  transition: background 0.3s;
+  width: 50px;
+  height: 50px;
+}
+
+button img {
+  width: 25px;
+  height: 25px;
+}
+
+.button-wrapper {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.button-title {
+  margin-top: 5px;
+  color: #000;
+  font-size: 14px;
+}
+
+/* تحديد الأزرار */
+.button-container .button-wrapper:nth-child(1) button
+.button-container .button-wrapper:nth-child(3) button ,{
+  background-color: #fff;
+  color: black;
+}
+
+.button-container .button-wrapper:nth-child(2) button {
+  background-color: #121D31;
+  color: white;
+}
   </style>
 </head>
 <body>
@@ -224,13 +260,28 @@
       </div>
     </div>
 
-    <div class="buttons-section">
-      <button class="button" onclick="navigateTo('recharge.html')">Yükleme</button>
-      <button class="button" onclick="navigateTo('withdraw.html')">Para Çekme</button>
-    </div>
+<div class="button-container">
+  <div class="button-wrapper">
+    <button id="withdrawButton2" onclick="location.href='withdraw.html'">
+      <img src="https://img.icons8.com/fluency-systems-filled/999/up-left-arrow.png">
+    </button>
+    <p class="button-title">Para çekme</p>
+  </div>
+  <div class="button-wrapper">
+  <button id="depositButton3" onclick="location.href='Plans.html'">
+    <img src="https://img.icons8.com/fluency-systems-regular/999/ffffff/money-circulation.png">
+  </button>
+  <p class="button-title">Yatırım planları</p>
+</div>
+  <div class="button-wrapper">
+    <button id="withdrawButton1" onclick="location.href='recharge.html'">
+      <img src="https://img.icons8.com/material-rounded/999/000/plus-math--v1.png">
+    </button>
+    <p class="button-title">Depozito</p>
+  </div>
+</div>
 
-    <!-- Banner resmi -->
-    <div class="promo-banner"></div>
+  <div class="promo-banner" onclick="window.location.href='Plans.html';"></div>
 
     <div class="winners-section">
       <h3>Bugünün Kazananları</h3>
