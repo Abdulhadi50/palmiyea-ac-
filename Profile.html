@@ -1,0 +1,173 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Kullanıcı Profili</title>
+    <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@300;400;500;700&display=swap" rel="stylesheet">
+    <script src="https://www.gstatic.com/firebasejs/8.3.3/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.3.3/firebase-auth.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.3.3/firebase-firestore.js"></script>
+    <style>
+        body {
+            font-family: 'Tajawal', sans-serif;
+            margin: 0;
+            padding: 0;
+            background: linear-gradient(to right, #fff, #fff);
+            text-align: center;
+            direction: rtl;
+            user-select: none;
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .container {
+            padding: 10px;
+            width: 90%;
+            max-width: 400px;
+            margin: 20px;
+        }
+
+        .profile-pic {
+            width: 100px;
+            height: 100px;
+            border-radius: 50%;
+            border: 3px solid #5152FC;
+        }
+
+        h2 {
+            color: #2a2a2a;
+            font-size: 1.4em;
+            margin: 15px 0;
+        }
+
+        #unique-id {
+            color: #5152FC;
+            font-weight: bold;
+            font-size: 1.2em;
+            margin-bottom: 15px;
+            display: block;
+        }
+
+        .edit-btn {
+            background: linear-gradient(to right, #4361ee, #3f37c9);
+            border: none;
+            border-radius: 12px;
+            color: #fff;
+            font-size: 16px;
+            font-weight: 600;
+            padding: 10px 15px;
+            transition: transform 0.2s, box-shadow 0.2s;
+            margin-top: 10px;
+        }
+
+        .edit-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+        }
+
+        .section {
+            background: linear-gradient(to right, #eef2f7, #eef2f7);
+            border-radius: 15px;
+            padding: 20px;
+            margin: 15px 0;
+            display: flex;
+            align-items: center;
+            transition: background 0.3s;
+        }
+
+        .section:hover {
+            background: rgba(81, 82, 252, 0.1);
+        }
+
+        .section img {
+            width: 34px;
+            height: 34px;
+            margin-left: 10px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+  <img src="https://img.icons8.com/color/999/circled-user-male-skin-type-7--v1.png" alt="Profil Resmi" class="profile-pic">
+  <h2 id="user-name">Yükleniyor...</h2>
+  <p class="info">ID: <span id="user-id">Yükleniyor...</span></p>
+  <p class="info">E-posta: <span id="user-email">Yükleniyor...</span></p>
+  <button class="edit-btn" onclick="editName()">Adı Düzenle</button>
+  <div class="section" onclick="navigateTo('support.html')">
+            <img src="https://img.icons8.com/fluency/999/telegram-app.png" alt="Destek">
+            Destek
+        </div>
+        <div class="section" onclick="navigateTo('withdraw.html')">
+            <img src="https://img.icons8.com/ios-glyphs/999/ff0000/minus.png" alt="Para Çekme">
+            Para Çekme
+        </div>
+        <div class="section" onclick="navigateTo('recharge.html')">
+            <img src="https://img.icons8.com/ios-glyphs/999/5152FC/plus--v1.png" alt="Para Yatırma">
+            Para Yatırma
+        </div>
+        <div class="section" onclick="navigateTo('info.html')">
+            <img src="https://img.icons8.com/ios-filled/999/5152FC/info.png" alt="Bilgi">
+            Bilgiler
+        </div>
+    </div>
+
+   <script>
+  const firebaseConfig = {
+    apiKey: "AIzaSyC4aW-Mr469PsIYT8n3jL--GbtRU5OTWdo",
+    authDomain: "smart-pay-6a9b8.firebaseapp.com",
+    databaseURL: "https://smart-pay-6a9b8-default-rtdb.firebaseio.com",
+    projectId: "smart-pay-6a9b8",
+    storageBucket: "smart-pay-6a9b8.appspot.com",
+    messagingSenderId: "9418007073",
+    appId: "1:9418007073:web:72e0144eb56524fc263960"
+  };
+  firebase.initializeApp(firebaseConfig);
+  const db = firebase.firestore();
+  
+  function loadUserData() {
+    firebase.auth().onAuthStateChanged((user) => {
+      if (user) {
+        db.collection("users").doc(user.uid).get().then((doc) => {
+          if (doc.exists) {
+            document.getElementById("user-name").innerText = doc.data().name;
+            document.getElementById("user-id").innerText = doc.data().uniqueId;
+            document.getElementById("user-email").innerText = user.email; // إضافة البريد الإلكتروني
+          } else {
+            alert("Kullanıcı bilgileri bulunamadı.");
+          }
+        }).catch((error) => {
+          alert("Hata: " + error.message);
+        });
+      } else {
+        alert("Giriş yapmalısınız.");
+      }
+    });
+  }
+  
+  function editName() {
+    const newName = prompt("Yeni adınızı girin:");
+    if (newName) {
+      firebase.auth().onAuthStateChanged((user) => {
+        if (user) {
+          db.collection("users").doc(user.uid).update({ name: newName }).then(() => {
+            document.getElementById("user-name").innerText = newName;
+            alert("Ad başarıyla güncellendi.");
+          }).catch((error) => {
+            alert("Hata: " + error.message);
+          });
+        }
+      });
+    }
+  }
+  
+  function navigateTo(page) {
+    window.location.href = page;
+  }
+  
+  window.onload = loadUserData;
+</script>
+</body>
+</html>
