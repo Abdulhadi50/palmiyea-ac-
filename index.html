@@ -1,380 +1,600 @@
 <!DOCTYPE html>
-<html lang="tr">
+<html lang="ar" dir="rtl">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Kullanıcı Paneli</title>
-  <!-- Türkçe destekleyen modern bir yazı tipi -->
-  <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@300;400;500;700&display=swap" rel="stylesheet">
-  <!-- Firebase 8.3.3 -->
-  <script src="https://www.gstatic.com/firebasejs/8.3.3/firebase-app.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/8.3.3/firebase-auth.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/8.3.3/firebase-firestore.js"></script>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=yes">
+  <title>QuantumX | تداول بثقة ونزاهة</title>
+  <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
   <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
     body {
       font-family: 'Tajawal', sans-serif;
-      background-color: #fff;
-      margin: 0;
-      padding: 10px;
-      /* Türkçe için yön LTR (varsayılan) */
+      background: #f5f5f7;
+      color: #1d1d1f;
+      line-height: 1.5;
+      overflow-x: hidden;
+      direction: rtl;
     }
 
     .container {
-      max-width: 400px;
-      margin: auto;
-      background: #fff;
-      padding: 10px;
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 0 28px;
     }
 
-    .header {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  margin-bottom: 25px;
-  border-bottom: 2px solid #3f37c9;
-  padding-bottom: 10px;
-}
-
-.header img {
-  height: 50px; /* حجم الشعار */
-}
-
-    .header h2 {
-      margin: 0;
-      color: #333;
+    /* خلفية فاتحة ناعمة */
+    .bg-light {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      z-index: -2;
+      background: linear-gradient(135deg, #f9f9fb 0%, #f0f0f5 100%);
     }
 
-    .user-info {
+    .subtle-grid {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      z-index: -1;
+      opacity: 0.2;
+      background-image: 
+        linear-gradient(#e0e0e0 1px, transparent 1px),
+        linear-gradient(90deg, #e0e0e0 1px, transparent 1px);
+      background-size: 60px 60px;
+      pointer-events: none;
+    }
+
+    /* Header */
+    header {
+      padding: 16px 0;
+      position: fixed;
+      width: 100%;
+      top: 0;
+      z-index: 100;
+      background: rgba(250, 250, 252, 0.8);
+      backdrop-filter: blur(25px);
+      border-bottom: 1px solid rgba(0,0,0,0.05);
+      transition: background 0.3s;
+    }
+
+    .header-inner {
       display: flex;
       align-items: center;
-      gap: 15px;
-      padding: 15px;
+      justify-content: space-between;
+    }
+
+    .logo-area {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .logo-img {
+      width: 42px;
+      height: 42px;
       border-radius: 12px;
-      background: #f9f9f9;
-      margin-bottom: 20px;
+      object-fit: contain;
+      background: #fff;
+      padding: 3px;
+      box-shadow: 0 2px 10px rgba(0,0,0,0.04);
+      border: 1px solid #eee;
     }
 
-    .user-img {
-      width: 60px;
-      height: 60px;
-      border-radius: 50%;
-      border: 2px solid #3f37c9;
+    .logo-text {
+      font-size: 1.5rem;
+      font-weight: 800;
+      color: #1d1d1f;
+      letter-spacing: 0.5px;
+    }
+    .logo-text span {
+      color: #e6a800;
     }
 
-    .user-info p {
-      margin: 0;
-      font-size: 16px;
+    nav a {
       color: #555;
+      text-decoration: none;
+      margin: 0 16px;
+      font-weight: 500;
+      font-size: 0.95rem;
+      transition: 0.2s;
     }
 
-    .balance-section {
-      background: #fff;
-      border: 1px solid #e0e0e0;
-      padding: 20px;
-      border-radius: 12px;
-      margin: 20px 0;
+    nav a:hover {
+      color: #1d1d1f;
     }
 
-    .balance-section h3 {
-      margin-top: 0;
-      color: #3f37c9;
-      font-weight: bold;
+    .btn-header {
+      background: #f5b800;
+      color: #000;
+      font-weight: 600;
+      padding: 10px 22px;
+      border-radius: 30px;
+      text-decoration: none;
+      font-size: 0.9rem;
+      transition: 0.2s;
+      box-shadow: 0 4px 12px rgba(245,184,0,0.2);
     }
 
-    .balance-item {
+    .btn-header:hover {
+      background: #e6a800;
+      box-shadow: 0 6px 18px rgba(230,168,0,0.3);
+    }
+
+    /* Hero */
+    .hero {
+      padding: 130px 0 60px;
+    }
+
+    .hero-flex {
       display: flex;
-      justify-content: space-between;
-      padding: 12px;
-      margin: 8px 0;
-      background: #f8f9fa;
-      border-radius: 8px;
-      font-weight: bold;
-      color: #333;
+      align-items: center;
+      gap: 50px;
+      flex-wrap: wrap;
     }
 
-    .buttons-section {
-      display: grid;
-      grid-template-columns: repeat(2, 1fr);
-      gap: 15px;
-      margin: 25px 0;
+    .hero-text {
+      flex: 1 1 400px;
     }
 
-    .button {
-      background: linear-gradient(to right, #4361ee, #3f37c9);
-      color: #fff;
-      padding: 15px;
-      border-radius: 10px;
-      transition: transform 0.2s, background 0.2s;
-      font-weight: bold;
+    .hero-text h1 {
+      font-size: 3.2rem;
+      font-weight: 900;
+      line-height: 1.2;
+      color: #1d1d1f;
+      margin-bottom: 14px;
+    }
+    .hero-text .accent {
+      color: #e6a800;
+    }
+
+    .hero-text p {
+      font-size: 1.1rem;
+      color: #555;
+      margin-bottom: 24px;
+      max-width: 480px;
+    }
+
+    .stats-mini {
+      display: flex;
+      gap: 30px;
+      margin-bottom: 28px;
+    }
+
+    .stat-mini h3 {
+      font-size: 1.8rem;
+      font-weight: 700;
+      color: #1d1d1f;
+    }
+    .stat-mini p {
+      font-size: 0.85rem;
+      color: #777;
+      margin: 0;
+    }
+
+    .btn-group {
+      display: flex;
+      gap: 14px;
+      flex-wrap: wrap;
+    }
+
+    .btn-primary {
+      background: #f5b800;
+      color: #000;
+      font-weight: 600;
+      padding: 12px 28px;
+      border-radius: 30px;
+      text-decoration: none;
+      font-size: 0.95rem;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      transition: 0.2s;
       border: none;
-      text-align: center;
+      box-shadow: 0 4px 15px rgba(245,184,0,0.3);
     }
 
-   
-    .promo-banner {
-      width: 100%;
-      height: 150px;
-      border-radius: 15px;
-      margin: 20px 0;
-      background: url('https://up6.cc/2025/02/174004819420991.jpg') no-repeat center/cover;
+    .btn-primary:hover {
+      background: #e6a800;
+      box-shadow: 0 8px 22px rgba(230,168,0,0.4);
     }
 
-    .winners-section {
-      background: #f9f9f9;
-      padding: 20px;
-      border-radius: 12px;
+    .btn-outline {
+      background: transparent;
+      border: 1.5px solid #e6a800;
+      color: #e6a800;
+      font-weight: 600;
+      padding: 12px 28px;
+      border-radius: 30px;
+      text-decoration: none;
+      font-size: 0.95rem;
+      transition: 0.2s;
     }
 
-    .winners-section h3 {
-      margin-top: 0;
-      color: #333;
-      font-weight: bold;
+    .btn-outline:hover {
+      background: rgba(230,168,0,0.06);
     }
 
-    .winner-item {
+    .hero-image {
+      flex: 1 1 300px;
       display: flex;
-      justify-content: space-between;
-      padding: 10px;
-      margin: 8px 0;
-      background: #fff;
-      color: #333;
-      border-radius: 8px;
-      border: 1px solid #e0e0e0;
+      justify-content: center;
     }
-    
-   .nav-container {
-    position: fixed;
-    bottom: 20px; /* لتقريب الأزرار السفلية */
-    left: 5%;
-    right: 5%;
-    background-color: #fff;
-    border-radius: 20px;
-    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
-    padding: 10px 0;
-}
 
-.nav {
-    display: flex;
-    justify-content: space-around;
-    align-items: center; /* لمحاذاة العناصر عمودياً */
-}
+    .hero-phone {
+      width: 280px;
+      height: 560px;
+      background: #fff;
+      border-radius: 38px;
+      padding: 10px;
+      box-shadow: 0 20px 45px rgba(0,0,0,0.08), 0 0 0 1px rgba(0,0,0,0.03);
+    }
 
-.nav button {
-    background-color: #fff;
-    border: none;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-}
+    .hero-phone img {
+      width: 100%;
+      height: 100%;
+      border-radius: 30px;
+      object-fit: cover;
+      background: #f0f0f0;
+    }
 
-.nav button img {
-    width: 30px;
-    height: 30px;
-}
+    /* Partners */
+    .partners-strip {
+      padding: 40px 0;
+      margin: 10px 0 30px;
+      border-top: 1px solid rgba(0,0,0,0.05);
+      border-bottom: 1px solid rgba(0,0,0,0.05);
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      justify-content: center;
+      gap: 40px;
+    }
 
-.nav button span {
-  font-family: 'Tajawal', sans-serif;
-    margin-top: 5px;
-    font-size: 15px;
-    color: #000;
-}
+    .partner-badge {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-weight: 600;
+      color: #444;
+      font-size: 1rem;
+    }
+    .partner-icon {
+      width: 18px;
+      height: 18px;
+      background: #f5b800;
+      border-radius: 5px;
+    }
 
-.nav button.home-button {
-    position: relative;
-    width: 60px;
-    height: 60px;
-    margin-top: -20px; /* رفع زر المنزل لأعلى */
-    
-    border-radius: 50%; /* جعله دائري */
-    padding: 10px;
-    
-}
+    /* Screenshots أفقي مثل أبل */
+    .screenshots-section {
+      padding: 60px 0 70px;
+    }
 
-.button-container {
-  display: flex;
-  justify-content: space-between;
-  margin-top: 20px;
-}
+    .section-title {
+      text-align: center;
+      margin-bottom: 40px;
+    }
+    .section-title h2 {
+      font-size: 2.2rem;
+      font-weight: 800;
+      color: #1d1d1f;
+    }
+    .section-title p {
+      color: #666;
+      margin-top: 6px;
+    }
 
-button {
-  padding: 5px 10px;
-  border: none;
-  border: 1.2px solid #ddd;
-  border-radius: 50px;
-  transition: background 0.3s;
-  width: 50px;
-  height: 50px;
-}
+    .horizontal-scroll {
+      display: flex;
+      gap: 24px;
+      overflow-x: auto;
+      padding: 15px 5px 20px;
+      scrollbar-width: thin;
+      scrollbar-color: #ccc #f0f0f0;
+      -webkit-overflow-scrolling: touch;
+    }
 
-button img {
-  width: 25px;
-  height: 25px;
-}
+    .horizontal-scroll::-webkit-scrollbar {
+      height: 6px;
+    }
+    .horizontal-scroll::-webkit-scrollbar-thumb {
+      background: #d0d0d0;
+      border-radius: 10px;
+    }
 
-.button-wrapper {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-}
+    .screenshot-card {
+      min-width: 260px;
+      max-width: 280px;
+      background: #fff;
+      border-radius: 28px;
+      padding: 14px;
+      box-shadow: 0 8px 24px rgba(0,0,0,0.04);
+      border: 1px solid rgba(0,0,0,0.04);
+      transition: 0.25s;
+      flex-shrink: 0;
+    }
 
-.button-title {
-  margin-top: 5px;
-  color: #000;
-  font-size: 14px;
-}
+    .screenshot-card:hover {
+      box-shadow: 0 16px 35px rgba(0,0,0,0.08);
+      transform: translateY(-4px);
+    }
 
-/* تحديد الأزرار */
-.button-container .button-wrapper:nth-child(1) button
-.button-container .button-wrapper:nth-child(3) button ,{
-  background-color: #fff;
-  color: black;
-}
+    .screenshot-card img {
+      width: 100%;
+      height: 320px;
+      object-fit: cover;
+      border-radius: 20px;
+      background: #fafafa;
+      display: block;
+    }
 
-.button-container .button-wrapper:nth-child(2) button {
-  background-color: #121D31;
-  color: white;
-}
+    .screenshot-label {
+      text-align: center;
+      margin-top: 12px;
+      font-weight: 600;
+      font-size: 0.9rem;
+      color: #333;
+    }
+
+    /* Download */
+    .download-area {
+      padding: 70px 0;
+      text-align: center;
+      background: #fff;
+      border-radius: 40px 40px 0 0;
+      box-shadow: 0 -5px 25px rgba(0,0,0,0.02);
+      margin-top: 20px;
+    }
+
+    .download-area h2 {
+      font-size: 2.2rem;
+      font-weight: 800;
+    }
+    .download-area p {
+      color: #666;
+      margin: 12px 0 28px;
+    }
+
+    .btn-download {
+      background: #f5b800;
+      color: #000;
+      font-weight: 700;
+      padding: 14px 40px;
+      border-radius: 35px;
+      text-decoration: none;
+      font-size: 1rem;
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      box-shadow: 0 6px 20px rgba(245,184,0,0.35);
+      transition: 0.2s;
+    }
+
+    .btn-download:hover {
+      background: #e6a800;
+    }
+
+    .qr-row {
+      margin-top: 35px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 14px;
+    }
+    .qr-placeholder {
+      width: 130px;
+      height: 130px;
+      background: #fff;
+      border-radius: 18px;
+      padding: 12px;
+      box-shadow: 0 5px 18px rgba(0,0,0,0.05);
+    }
+    .qr-inner {
+      width: 100%;
+      height: 100%;
+      background: #f0f0f0;
+      border-radius: 10px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: bold;
+      color: #e6a800;
+    }
+
+    footer {
+      padding: 30px 0;
+      text-align: center;
+      color: #999;
+      background: #fff;
+      border-top: 1px solid #eee;
+      font-size: 0.9rem;
+    }
+
+    /* Modal */
+    .modal {
+      display: none;
+      position: fixed;
+      top: 0; left: 0; width: 100%; height: 100%;
+      background: rgba(0,0,0,0.85);
+      backdrop-filter: blur(8px);
+      align-items: center;
+      justify-content: center;
+      z-index: 1000;
+    }
+    .modal img {
+      max-width: 90%;
+      max-height: 85%;
+      border-radius: 28px;
+      box-shadow: 0 30px 60px rgba(0,0,0,0.5);
+      border: 1px solid rgba(255,255,255,0.2);
+    }
+    .modal-close {
+      position: absolute;
+      top: 25px;
+      right: 35px;
+      font-size: 38px;
+      color: #fff;
+      background: none;
+      border: none;
+      font-weight: 300;
+    }
+
+    @media (max-width: 768px) {
+      .hero-flex {
+        flex-direction: column;
+        text-align: center;
+      }
+      .hero-text p {
+        max-width: 100%;
+      }
+      .stats-mini {
+        justify-content: center;
+      }
+      .btn-group {
+        justify-content: center;
+      }
+      nav {
+        display: none;
+      }
+      .hero-text h1 {
+        font-size: 2.5rem;
+      }
+    }
   </style>
 </head>
 <body>
-  <div class="container">
-    <div class="header">
-  <h2>palmiye ağacı</h2>
-  <img src="https://up6.cc/2025/02/173927831537675.png">
-</div>
+  <div class="bg-light"></div>
+  <div class="subtle-grid"></div>
 
-    <div class="user-info">
-      <!-- Kullanıcı resmi -->
-      <img src="https://img.icons8.com/color/999/circled-user-male-skin-type-7--v1.png" alt="Kullanıcı Resmi" class="user-img">
-      <div>
-        <p id="username">Merhaba, </p>
-        <p id="userId" style="font-size:14px; color:#777;">ID: </p>
+  <header>
+    <div class="container header-inner">
+      <div class="logo-area">
+        <img src="https://up6.cc/2026/06/178142395071958.png" alt="شعار QuantumX" class="logo-img">
+        <div class="logo-text">Quantum<span>X</span></div>
       </div>
+      <nav>
+        <a href="#">الرئيسية</a>
+        <a href="#screenshots">المعرض</a>
+        <a href="#partners">الشركاء</a>
+        <a href="#download">تحميل</a>
+      </nav>
+      <a href="#download" class="btn-header">تداول الآن</a>
     </div>
+  </header>
 
-    <div class="balance-section">
-      <h3>Bakiye</h3>
-      <div class="balance-item">
-        <span>Türk Lirası</span>
-        <span id="balance">0.00</span>
+  <main>
+    <section class="hero container">
+      <div class="hero-flex">
+        <div class="hero-text">
+          <h1>منصة <span class="accent">QuantumX</span> للتداول الذكي</h1>
+          <p>تداول بثقة ونزاهة مع تطبيق متكامل يجمع بين الأمان والتحليلات الفورية. انضم إلى مجتمعنا المتنامي.</p>
+          <div class="stats-mini">
+            <div class="stat-mini"><h3>+12,500</h3><p>مستخدم نشط</p></div>
+            <div class="stat-mini"><h3>99.7%</h3><p>أمان واستقرار</p></div>
+          </div>
+          <div class="btn-group">
+            <a href="https://apk.e-droid.net/apk/app4001888-j9wak5.apk?v=1" class="btn-primary">تحميل التطبيق</a>
+            <a href="#screenshots" class="btn-outline">استعراض الواجهات</a>
+          </div>
+        </div>
+        <div class="hero-image">
+          <div class="hero-phone">
+            <img src="https://up6.cc/2026/06/178142383128321.jpg" alt="تطبيق QuantumX">
+          </div>
+        </div>
       </div>
+    </section>
+
+    <!-- شركاء -->
+    <div id="partners" class="partners-strip container">
+      <div class="partner-badge"><span class="partner-icon"></span> Binance</div>
+      <div class="partner-badge"><span class="partner-icon"></span> KuCoin</div>
+      <div class="partner-badge"><span class="partner-icon"></span> Bybit</div>
+      <div class="partner-badge"><span class="partner-icon"></span> OKX</div>
+      <div class="partner-badge"><span class="partner-icon"></span> Coinbase</div>
     </div>
 
-<div class="button-container">
-  <div class="button-wrapper">
-    <button id="withdrawButton2" onclick="location.href='withdraw.html'">
-      <img src="https://img.icons8.com/fluency-systems-filled/999/up-left-arrow.png">
-    </button>
-    <p class="button-title">Para çekme</p>
-  </div>
-  <div class="button-wrapper">
-  <button id="depositButton3" onclick="location.href='Plans.html'">
-    <img src="https://img.icons8.com/fluency-systems-regular/999/ffffff/money-circulation.png">
-  </button>
-  <p class="button-title">Yatırım planları</p>
-</div>
-  <div class="button-wrapper">
-    <button id="withdrawButton1" onclick="location.href='recharge.html'">
-      <img src="https://img.icons8.com/material-rounded/999/000/plus-math--v1.png">
-    </button>
-    <p class="button-title">Depozito</p>
-  </div>
-</div>
+    <!-- لقطات أفقية -->
+    <section id="screenshots" class="screenshots-section container">
+      <div class="section-title">
+        <h2>تصميم عصري وتجربة سلسة</h2>
+        <p>اسحب لليسار لاستعراض المزيد</p>
+      </div>
+      <div class="horizontal-scroll">
+        <div class="screenshot-card" onclick="openModal('https://up6.cc/2026/06/178142383128321.jpg')">
+          <img src="https://up6.cc/2026/06/178142383128321.jpg" alt="لقطة 1">
+          <div class="screenshot-label">لوحة التحكم الرئيسية</div>
+        </div>
+        <div class="screenshot-card" onclick="openModal('https://up6.cc/2026/06/17814238313332.jpg')">
+          <img src="https://up6.cc/2026/06/17814238313332.jpg" alt="لقطة 2">
+          <div class="screenshot-label">الرسوم البيانية والتحليل</div>
+        </div>
+        <div class="screenshot-card" onclick="openModal('https://up6.cc/2026/06/178142383138713.jpg')">
+          <img src="https://up6.cc/2026/06/178142383138713.jpg" alt="لقطة 3">
+          <div class="screenshot-label">المحفظة وإدارة الأصول</div>
+        </div>
+        <div class="screenshot-card" onclick="openModal('https://up6.cc/2026/06/178142383128321.jpg')">
+          <img src="https://up6.cc/2026/06/178142383128321.jpg" alt="لقطة 4">
+          <div class="screenshot-label">تنفيذ الصفقات</div>
+        </div>
+      </div>
+    </section>
 
-  <div class="promo-banner" onclick="window.location.href='Plans.html';"></div>
+    <!-- تحميل -->
+    <section id="download" class="download-area">
+      <div class="container">
+        <h2>جاهز للانطلاق؟</h2>
+        <p>حمّل تطبيق QuantumX لأجهزة Android وابدأ التداول بأمان</p>
+        <a href="https://apk.e-droid.net/apk/app4001888-j9wak5.apk?v=1" class="btn-download">تحميل مباشر APK</a>
+        <div class="qr-row">
+          <div class="qr-placeholder">
+            <div class="qr-inner">QR</div>
+          </div>
+          <p style="color:#888;">امسح الكود للتحميل</p>
+        </div>
+        <p style="margin-top:20px; color:#999; font-size:0.9rem;">+12,500 مستخدم يثقون بمنصتنا</p>
+      </div>
+    </section>
+  </main>
 
-    <div class="winners-section">
-      <h3>Bugünün Kazananları</h3>
-      <div id="winners-list"></div>
-    </div>
+  <footer>
+    <div class="container">© 2026 QuantumX. جميع الحقوق محفوظة. تداول بثقة ونزاهة.</div>
+  </footer>
+
+  <!-- مودال -->
+  <div id="imageModal" class="modal" onclick="closeModal()">
+    <span class="modal-close">&times;</span>
+    <img id="modalImage" src="" alt="صورة مكبرة">
   </div>
-  
-  <div class="nav-container">
-  <div class="nav">
-    <button onclick="navigateTo('Profile.html')" class="active">
-      <img src="https://img.icons8.com/ios-glyphs/999/settings--v1.png">
-      <span>Hesap</span>
-    </button>
-    <button onclick="navigateTo('Plans.html')" class="active">
-      <img src="https://img.icons8.com/external-inipagistudio-mixed-inipagistudio/999/external-investment-startup-company-ecosystem-inipagistudio-mixed-inipagistudio.png">
-      <span>Mağaza</span>
-    </button>
-    <button onclick="navigateTo('referral.html')" class="active">
-      <img src="https://img.icons8.com/external-inipagistudio-mixed-inipagistudio/999/external-referral-offline-marketing-inipagistudio-mixed-inipagistudio.png">
-      <span>Davet</span>
-    </button>
-  </div>
-</div>
 
   <script>
-    const firebaseConfig = {
-  apiKey: "AIzaSyC4aW-Mr469PsIYT8n3jL--GbtRU5OTWdo",
-  authDomain: "smart-pay-6a9b8.firebaseapp.com",
-  databaseURL: "https://smart-pay-6a9b8-default-rtdb.firebaseio.com",
-  projectId: "smart-pay-6a9b8",
-  storageBucket: "smart-pay-6a9b8.appspot.com",
-  messagingSenderId: "9418007073",
-  appId: "1:9418007073:web:72e0144eb56524fc263960"
-};
-
-    firebase.initializeApp(firebaseConfig);
-    const auth = firebase.auth();
-    const db = firebase.firestore();
-
-    // Kullanıcı verileri
-    auth.onAuthStateChanged(user => {
-      if (user) {
-        db.collection("users").doc(user.uid).get()
-          .then(doc => {
-            if (doc.exists) {
-              const userData = doc.data();
-              document.getElementById('username').textContent += userData.name;
-              document.getElementById('userId').textContent += userData.uniqueId;
-              document.getElementById('balance').textContent = userData.balance.toFixed(2);
-            }
-          })
-          .catch(error => console.error("Hata:", error));
-      } else {
-        window.location.href = "login.html";
-      }
+    function openModal(src) {
+      document.getElementById('modalImage').src = src;
+      document.getElementById('imageModal').style.display = 'flex';
+    }
+    function closeModal() {
+      document.getElementById('imageModal').style.display = 'none';
+    }
+    document.getElementById('imageModal').addEventListener('click', function(e) {
+      if (e.target === this) closeModal();
     });
-
-    // Kazananlar sistemi
-    const names = [
-  "Ahmet****", "Mehmet***", "Ayşe****", "Fatma****", "Emre***", "Zeynep***", "Can***", "Elif****",
-  "Burak***", "Merve****", "Oğuz***", "Deniz****", "عبدو***", "Derya****", "Kerem***", "Selin****",
-  "Ece***", "Yusuf***", "Cem***", "Işıl****", "Sinan***", "Gizem****", "حسين مر***", "Özge****",
-  "Onur***", "Seda****", "Eren***", "Buse****", "Kaan***", "Cansu****", "Baran***", "Esra****",
-  "Tolga***", "Sibel****", "محمد***", "Gökçe****", "Serkan***", "Aslı****", "Umut***", "Nisan****",
-  "Alper***", "Pelin****", "Sarp***", "Bahar****", "Arda***", "Dila****", "Okan***", "Eylül****",
-  "Volkan***", "Gül****"
-];
-    
-    function generateWinners() {
-      const winnersList = document.getElementById("winners-list");
-      winnersList.innerHTML = '';
-      
-      for (let i = 0; i < 2; i++) {
-        const randomName = names[Math.floor(Math.random() * names.length)];
-        const randomAmount = (Math.random() * (1000 - 100) + 100).toFixed(2);
-        
-        const winnerDiv = document.createElement('div');
-        winnerDiv.className = 'winner-item';
-        winnerDiv.innerHTML = `
-          <span>${randomName}</span>
-          <span>${randomAmount} TL</span>
-        `;
-        
-        winnersList.appendChild(winnerDiv);
-      }
-    }
-
-    setInterval(generateWinners, 4000);
-    generateWinners();
-
-    function navigateTo(page) {
-      window.location.href = page;
-    }
+    document.querySelectorAll('a[href^="#"]').forEach(link => {
+      link.addEventListener('click', function(e) {
+        const href = this.getAttribute('href');
+        if (href === "#") return;
+        e.preventDefault();
+        document.querySelector(href).scrollIntoView({ behavior: 'smooth' });
+      });
+    });
   </script>
 </body>
 </html>
